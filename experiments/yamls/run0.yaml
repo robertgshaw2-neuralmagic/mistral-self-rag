@@ -1,21 +1,20 @@
 run_name: run0
 global_seed: 17
 
-model_id: mistralai/Mistral-7B-v0.1
-max_seq_len: 4096
+max_seq_len: 2048
 
 # Model
 model:
   name: hf_causal_lm
-  init_device: meta
-  pretrained_model_name_or_path: ${model_id}
+  init_device: mixed
+  pretrained_model_name_or_path: /data/mistral-edited
   pretrained: true
   use_flash_attention_2: true
   master_weights_dtype: bf16
 
 # Tokenizer
 tokenizer:
-  name: ${model_id}
+  name: /data/mistral-edited
   kwargs:
     model_max_length: ${max_seq_len}
 
@@ -36,14 +35,13 @@ train_loader:
 
 # Optimization
 scheduler:
-  name: cosine_with_warmup
-  t_warmup: 100ba
-  alpha_f: 0.1
+  name: linear_decay_with_warmup
+  t_warmup: 10ba
 
 # Note: You may want to change learning rate, betas, weight decay
 optimizer:
-  name: decoupled_lionw
-  lr: 5.0e-7
+  name: decoupled_adamw
+  lr: 2.0e-5
   betas:
   - 0.9
   - 0.95
@@ -55,15 +53,14 @@ algorithms:
     clipping_threshold: 1.0
 
 max_duration: 1ep
+eval_interval: 1
 eval_first: false
-eval_interval: 1ep
-eval_subset_num_batches: -1
 global_train_batch_size: 64
 
 # System
 seed: ${global_seed}
-device_eval_batch_size: 8
-device_train_microbatch_size: auto
+device_eval_batch_size: 32
+device_train_microbatch_size: 16
 precision: amp_bf16
 
 # FSDP
@@ -79,7 +76,7 @@ fsdp_config:
 # Logging
 progress_bar: true
 log_to_console: true
-console_log_interval: 100ba
+console_log_interval: 10ba
 
 callbacks:
   speed_monitor:
@@ -88,14 +85,15 @@ callbacks:
   memory_monitor: {}
   runtime_estimator: {}
 
-#   loggers:
-#     wandb: {}
+loggers:
+  wandb: {
+    "project": "mistral-self-rag",
+    "entity": "rshaw"
+  }
 
-#   Checkpoint to local filesystem or remote object store
-#   save_interval: 2000ba
-#   save_num_checkpoints_to_keep: 1  # Important, this cleans up checkpoints saved to DISK
-#   save_folder: ./{run_name}/checkpoints
-#   save_folder: s3://my-bucket/my-folder/{run_name}/checkpoints
+save_interval: 200ba
+save_num_checkpoints_to_keep: 1  # Important, this cleans up checkpoints saved to DISK
+save_folder: data/runs/{run_name}/checkpoints
 
 #   Load from local filesystem or remote object store
 #   load_path: ./gpt-1b/checkpoints/latest-rank{rank}.pt

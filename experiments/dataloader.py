@@ -41,7 +41,7 @@ def build_self_rag_dataloader(
     encode_function = partial(
         encode_with_prompt_completion_format,
         tokenizer=tokenizer,
-        max_seq_length=cfg.max_seq_length,
+        max_seq_length=cfg.dataset.max_seq_len,
         context_markups=context_markups
     )
 
@@ -49,11 +49,10 @@ def build_self_rag_dataloader(
         encode_function,
         batched=False,
         num_proc=32,
-        remove_columns=[name for name in dataset["train"].column_names if name not in ["input_ids", "labels", "attention_mask"]],
+        remove_columns=[name for name in dataset.column_names if name not in ["input_ids", "labels", "attention_mask"]],
         desc="Tokenizing and reformatting instruction data",
     )
 
-    # st
     dl = DataLoader(
         dataset,
         collate_fn=DataCollatorForSeq2Seq(tokenizer=tokenizer, padding="longest"),

@@ -544,14 +544,6 @@ def main(cfg: DictConfig) -> Trainer:
         device_train_batch_size,
     )
 
-    for batch in next(iter(train_loader.dataloader)):
-        print(batch)
-        
-        print(batch["input_ids"].shape)
-        print(batch["labels"].shape)
-        print(batch["attention_mask"].shape)
-        raise ValueError
-
     if mosaicml_logger is not None:
         mosaicml_logger.log_metrics({'data_validated': time.time()})
 

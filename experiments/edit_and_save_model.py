@@ -1,13 +1,16 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
-import torch
+import torch, argparse
 
-OUTPUT_DIR = "/data/mistral-edited"
+parser = argparse.ArgumentParser()
+parser.add_argument("--output-dir", type=str, default="/data/mistral-edited")
+
 MODEL_ID = "mistralai/Mistral-7B-v0.1"
 
-def main():
+def main(output_dir):
     model = AutoModelForCausalLM.from_pretrained(
         MODEL_ID,
-        torch_dtype=torch.bfloat16
+        torch_dtype=torch.bfloat16,
+        device_map="auto"
     )
     tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
 
@@ -32,8 +35,9 @@ def main():
     print(f"new vocab size = {model.config.vocab_size}")
     print(f"new tokenizer len = {len(tokenizer)}")
 
-    model.save_pretrained(OUTPUT_DIR)
-    tokenizer.save_pretrained(OUTPUT_DIR)
+    model.save_pretrained(output_dir)
+    tokenizer.save_pretrained(output_dir)
 
 if __name__ == "__main__":
-    main()
+    args = parser.parse_args()
+    main(output_dir=args.output_dir)

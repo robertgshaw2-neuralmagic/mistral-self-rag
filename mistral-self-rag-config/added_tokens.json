@@ -1,0 +1,18 @@
+{
+  "</paragraph>": 32013,
+  "<pad>": 32015,
+  "<paragraph>": 32005,
+  "[Continue to Use Evidence]": 32006,
+  "[Fully supported]": 32014,
+  "[Irrelevant]": 32011,
+  "[No Retrieval]": 32010,
+  "[No support / Contradictory]": 32003,
+  "[Partially supported]": 32000,
+  "[Relevant]": 32007,
+  "[Retrieval]": 32004,
+  "[Utility:1]": 32001,
+  "[Utility:2]": 32002,
+  "[Utility:3]": 32008,
+  "[Utility:4]": 32012,
+  "[Utility:5]": 32009
+}
